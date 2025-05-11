@@ -1,19 +1,23 @@
-import * as THREE from 'three';
-import { SceneWorld } from './SceneWorld';
 
-const canvas = document.querySelector<HTMLCanvasElement>('#canvas')!;
-const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
-renderer.setSize(window.innerWidth, window.innerHeight);
+import { LoopController } from './core/LoopController'
+import { AnimationManager } from './core/AnimationManager'
+import { RotatorManager } from './animations/RotationManager'
+import { createCamera } from './render/createCamera'
+import { createRenderer } from './render/createRenderer'
+import { buildWorld } from './buildWorld'
 
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight);
-camera.position.set(0, 50, 35);
-camera.lookAt(0, 0, 0);
-const world = new SceneWorld(new THREE.Scene());
+const renderer = createRenderer()
+const camera = createCamera()
 
-const clock = new THREE.Clock();
-function animate() {
-  requestAnimationFrame(animate);
-  world.update(clock.getDelta());
-  renderer.render(world.scene, camera);
-}
-animate();
+const animationManager = new AnimationManager()
+const rotationManager = new RotatorManager()
+animationManager.subscribe(rotationManager)
+
+const scene = buildWorld(rotationManager)
+
+const loop = new LoopController((delta) => {
+  animationManager.update(delta)
+  renderer.render(scene, camera)
+})
+
+loop.start()
