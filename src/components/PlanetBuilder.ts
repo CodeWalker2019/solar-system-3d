@@ -8,10 +8,12 @@ export class PlanetBuilder {
     private segments = 32
     private x = 0
     private y = 0
+    private z = 0
 
-    withPosition(x: number, y: number): this {
+    withPosition(x: number, y: number, z: number): this {
         this.x = x
         this.y = y
+        this.z = z
         return this
     }
 
@@ -48,6 +50,7 @@ export class PlanetBuilder {
         const geometry = new THREE.SphereGeometry(this.radius, this.segments, this.segments)
         const material = new THREE.MeshBasicMaterial({ color: this.color })
         const mesh = new THREE.Mesh(geometry, material)
+        mesh.position.set(this.x, this.y, this.z)
 
         mesh.name = this.name
         mesh.castShadow = true
